@@ -11,6 +11,16 @@ const getActiveTab = (pathname: string): 'resumo' | 'logs' | 'fixos' => {
   return 'resumo'
 }
 
+const getPageTitle = (pathname: string): string => {
+  if (!pathname || pathname === '/') return 'Planify | Resumo'
+  if (pathname === '/logs' || pathname.startsWith('/logs/')) return 'Planify | Logs'
+  if (pathname === '/fixed' || pathname.startsWith('/fixed/')) return 'Planify | Fixos'
+  if (pathname === '/profile') return 'Planify | Perfil'
+  if (pathname === '/households') return 'Planify | Households'
+  if (pathname.startsWith('/tools/')) return 'Planify | Ferramentas'
+  return 'Planify'
+}
+
 const RequireHousehold = ({ children }: { children: React.ReactNode }) => {
   const { user, loading: authLoading } = useAuth()
   const { households, isLoading, isInitialized } = useHousehold()
@@ -74,7 +84,12 @@ const RequireHousehold = ({ children }: { children: React.ReactNode }) => {
 
 export const ProtectedLayout = () => {
   const { location } = useRouterState()
-  const activeTab = getActiveTab(location.pathname ?? '/')
+  const pathname = location.pathname ?? '/'
+  const activeTab = getActiveTab(pathname)
+
+  useEffect(() => {
+    document.title = getPageTitle(pathname)
+  }, [pathname])
 
   return (
     <RequireAuth>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { Home, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,10 @@ function OnboardingContent() {
     const [name, setName] = useState('')
     const [error, setError] = useState<string | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    useEffect(() => {
+        document.title = 'Planify | Bem-vindo'
+    }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()

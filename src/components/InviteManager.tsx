@@ -19,14 +19,25 @@ import {
 } from '@/components/ui/dialog'
 import { useInvites, useCreateInvite, useRevokeInvite } from '@/hooks/useInvites'
 import { useHousehold } from '@/lib/HouseholdProvider'
+import { useHouseholdMembers } from '@/hooks/useHouseholdMembers'
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 export function InviteManager() {
     const { activeHousehold, canManageMembers } = useHousehold()
+    const { data: members } = useHouseholdMembers()
     const { data: invites, isLoading } = useInvites()
     const createInvite = useCreateInvite()
     const revokeInvite = useRevokeInvite()
     const [isOpen, setIsOpen] = useState(false)
     const [role, setRole] = useState<'member' | 'admin'>('member')
+
+    const isHouseholdFull = (members?.length ?? 0) >= 2
+    const fullHouseholdMessage = "Por enquanto o Planify só suporta households com 2 membros."
     const [copiedId, setCopiedId] = useState<string | null>(null)
 
     if (!canManageMembers) {
@@ -63,12 +74,30 @@ export function InviteManager() {
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                    <Users className="h-4 w-4" />
-                    Convidar
-                </Button>
-            </DialogTrigger>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <span tabIndex={0} className="inline-flex">
+                            <DialogTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="gap-2"
+                                    disabled={isHouseholdFull}
+                                >
+                                    <Users className="h-4 w-4" />
+                                    Convidar
+                                </Button>
+                            </DialogTrigger>
+                        </span>
+                    </TooltipTrigger>
+                    {isHouseholdFull && (
+                        <TooltipContent>
+                            <p>{fullHouseholdMessage}</p>
+                        </TooltipContent>
+                    )}
+                </Tooltip>
+            </TooltipProvider>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle>Convidar para {activeHousehold?.name}</DialogTitle>
@@ -91,24 +120,37 @@ export function InviteManager() {
                                     <SelectItem value="admin">Admin</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <Button
-                                onClick={handleCreateInvite}
-                                disabled={createInvite.isPending}
-                                size="lg"
-                                className="flex-1"
-                            >
-                                {createInvite.isPending ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Criando...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Link className="mr-2 h-4 w-4" />
-                                        Criar Link
-                                    </>
-                                )}
-                            </Button>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <span className="flex-1 flex" tabIndex={0}>
+                                            <Button
+                                                onClick={handleCreateInvite}
+                                                disabled={createInvite.isPending || isHouseholdFull}
+                                                size="lg"
+                                                className="flex-1"
+                                            >
+                                                {createInvite.isPending ? (
+                                                    <>
+                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                        Criando...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Link className="mr-2 h-4 w-4" />
+                                                        Criar Link
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </span>
+                                    </TooltipTrigger>
+                                    {isHouseholdFull && (
+                                        <TooltipContent>
+                                            <p>{fullHouseholdMessage}</p>
+                                        </TooltipContent>
+                                    )}
+                                </Tooltip>
+                            </TooltipProvider>
                         </div>
                     </div>
 

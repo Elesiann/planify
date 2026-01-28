@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { CheckCircle, Home, Loader2, XCircle, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,10 @@ export default function InvitePage() {
     const { data: invite, isLoading, error } = useInviteByToken(token)
     const acceptInvite = useAcceptInvite()
     const [acceptError, setAcceptError] = useState<string | null>(null)
+
+    useEffect(() => {
+        document.title = 'Planify | Convite'
+    }, [])
 
     const handleAccept = async () => {
         if (!token) return

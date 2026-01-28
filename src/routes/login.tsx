@@ -8,6 +8,10 @@ const LoginPage = () => {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
+    document.title = 'Planify | Login'
+  }, [])
+
+  useEffect(() => {
     if (!loading && user) {
       // Check if there's a returnTo URL (e.g., from invite page)
       const returnTo = localStorage.getItem('returnTo')
