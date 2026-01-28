@@ -1,0 +1,80 @@
+/* src/styles/planify-theme.css */
+
+/* Claro (se quiser um dia) */
+:root {
+    --background: 210 40% 98%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* 🌈 brand roxo */
+    --primary: 226 74% 57%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 215 15% 85%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 94%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* pode usar o mesmo roxo como accent */
+    --accent: 226 74% 57%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 63%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 20% 83%;
+    --input: 215 20% 83%;
+
+    /* 👇 foco roxo (não mais azul) */
+    --ring: 226 74% 57%;
+
+    --radius: 0.75rem;
+
+    --planify-bg-soft: 215 40% 97%;
+    --planify-chip-bg: 210 40% 96%;
+}
+
+
+/* Tema dark Planify */
+:root[class~="dark"] {
+    --background: 225 40% 8%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 226 74% 57%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 222 33% 16%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 220 39% 11%;
+    --muted-foreground: 217 15% 65%;
+
+    --accent: 221 83% 53%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 218 31% 20%;
+    --input: 218 31% 20%;
+
+    /* 👇 aqui estava azul, agora segue o primary */
+    --ring: 226 74% 57%;
+
+    --radius: 0.75rem;
+
+    --planify-bg-soft: 222 50% 7%;
+    --planify-chip-bg: 222 35% 15%;
+}
