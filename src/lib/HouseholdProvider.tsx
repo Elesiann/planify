@@ -11,6 +11,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from './supabaseClient'
 import { useAuth } from './auth'
+import { fixedExpensesKeys } from './queryKeys'
 
 // Types
 export type Household = {
@@ -149,7 +150,7 @@ export const HouseholdProvider = ({ children }: PropsWithChildren) => {
             queryClient.invalidateQueries({ queryKey: householdKeys.active() })
             // Invalidate all data that depends on household
             queryClient.invalidateQueries({ queryKey: ['transactions'] })
-            queryClient.invalidateQueries({ queryKey: ['fixed_expenses'] })
+            queryClient.invalidateQueries({ queryKey: fixedExpensesKeys.all })
         },
     })
 
