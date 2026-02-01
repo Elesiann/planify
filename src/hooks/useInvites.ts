@@ -137,7 +137,7 @@ export const useRevokeInvite = () => {
                 throw new Error(error.message)
             }
         },
-        onSuccess: (_) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['invites'] })
         },
     })

@@ -214,7 +214,7 @@ const FixedExpensesPage = () => {
             </DialogDescription>
           </DialogHeader>
           <FixedExpenseForm
-            key={editingExpense?.id ?? 'new'}
+            key={isModalOpen ? (editingExpense?.id ?? 'new') : 'closed'}
             mode={editingExpense ? 'edit' : 'create'}
             initialData={editingExpense ?? undefined}
             onSubmitSuccess={closeModal}

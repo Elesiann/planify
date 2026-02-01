@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,6 +18,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
 import type { Household } from '@/lib/HouseholdProvider'
 
 type HouseholdFormData = {
@@ -52,27 +53,15 @@ export function HouseholdForm({
     onSubmit,
     isLoading = false,
 }: HouseholdFormProps) {
-    const [name, setName] = useState('')
-    const [currency, setCurrency] = useState('BRL')
-    const [fixedDueDay, setFixedDueDay] = useState(5)
+    const [name, setName] = useState(household?.name ?? '')
+    const [currency, setCurrency] = useState(household?.currency ?? 'BRL')
+    const [fixedDueDay, setFixedDueDay] = useState(household?.fixed_due_day ?? 5)
 
     const isEditing = Boolean(household)
     const title = isEditing ? 'Editar Household' : 'Criar Household'
     const description = isEditing
         ? 'Atualize as configuracoes da sua household.'
         : 'Configure sua nova household para gerenciar gastos.'
-
-    useEffect(() => {
-        if (household) {
-            setName(household.name)
-            setCurrency(household.currency ?? 'BRL')
-            setFixedDueDay(household.fixed_due_day ?? 5)
-        } else {
-            setName('')
-            setCurrency('BRL')
-            setFixedDueDay(5)
-        }
-    }, [household, open])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -119,29 +108,30 @@ export function HouseholdForm({
                         </Select>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                         <Label htmlFor="household-due-day">Dia de Vencimento</Label>
-                        <Select
-                            value={String(fixedDueDay)}
-                            onValueChange={(v) => setFixedDueDay(Number(v))}
-                        >
-                            <SelectTrigger id="household-due-day">
-                                <SelectValue placeholder="Selecione o dia" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {DUE_DAY_OPTIONS.map((option) => (
-                                    <SelectItem key={option.value} value={String(option.value)}>
-                                        Dia {option.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <div className="grid grid-cols-7 gap-2">
+                            {DUE_DAY_OPTIONS.map((option) => (
+                                <Button
+                                    key={option.value}
+                                    type="button"
+                                    variant={fixedDueDay === option.value ? 'default' : 'outline'}
+                                    className={cn(
+                                        'h-9 w-full p-0 text-sm font-medium transition-all',
+                                        fixedDueDay === option.value && 'ring-2 ring-primary ring-offset-2'
+                                    )}
+                                    onClick={() => setFixedDueDay(option.value)}
+                                >
+                                    {option.value}
+                                </Button>
+                            ))}
+                        </div>
                         <p className="text-xs text-muted-foreground">
                             Dia do mes em que as despesas fixas vencem.
                         </p>
                     </div>
 
-                    <DialogFooter className="pt-4">
+                    <DialogFooter className="pt-4 gap-y-4">
                         <Button
                             type="button"
                             variant="outline"

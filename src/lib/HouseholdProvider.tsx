@@ -5,7 +5,6 @@ import {
     useEffect,
     useMemo,
     useRef,
-    useState,
     type PropsWithChildren,
 } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -46,6 +45,7 @@ type HouseholdContextValue = {
 
     // Loading states
     isLoading: boolean
+    isSwitching: boolean
     isInitialized: boolean
 
     // Actions
@@ -69,7 +69,6 @@ const householdKeys = {
 export const HouseholdProvider = ({ children }: PropsWithChildren) => {
     const { user } = useAuth()
     const queryClient = useQueryClient()
-    const [isInitialized, setIsInitialized] = useState(false)
     const hasAutoSelectedRef = useRef(false)
 
     // Fetch all households the user is a member of
@@ -169,31 +168,19 @@ export const HouseholdProvider = ({ children }: PropsWithChildren) => {
         hasAutoSelectedRef.current = false
     }, [user?.id])
 
-    // Handle initialization - only set initialized when user is logged in and queries complete
+    // Derive initialization state
+    const isInitialized = Boolean(user?.id) && !householdsLoading && !activeLoading
+
+    // Handle auto-selection of household
     useEffect(() => {
-        // If no user, we're not initialized (waiting for auth)
-        if (!user?.id) {
-            setIsInitialized(false)
-            return
-        }
-
-        // If user exists but queries still loading, keep waiting
-        if (householdsLoading || activeLoading) {
-            return
-        }
-
-        // User exists and queries complete - we're initialized
-        setIsInitialized(true)
-
-        // If user has households but none active, select first one (only once)
-        if (householdsData?.length && !activeHouseholdId && !hasAutoSelectedRef.current) {
+        if (isInitialized && householdsData?.length && !activeHouseholdId && !hasAutoSelectedRef.current) {
             hasAutoSelectedRef.current = true
             switchHousehold(householdsData[0].id).catch((err) => {
                 console.error('Failed to auto-select household:', err)
                 hasAutoSelectedRef.current = false // Allow retry
             })
         }
-    }, [user?.id, householdsData, activeHouseholdId, householdsLoading, activeLoading, switchHousehold])
+    }, [isInitialized, householdsData, activeHouseholdId, switchHousehold])
 
     // Permission helpers
     const currentRole = activeHousehold?.role
@@ -206,6 +193,7 @@ export const HouseholdProvider = ({ children }: PropsWithChildren) => {
         activeHouseholdId: activeHouseholdId ?? null,
         households: householdsData ?? [],
         isLoading: householdsLoading || activeLoading,
+        isSwitching: switchMutation.isPending,
         isInitialized,
         switchHousehold,
         refetch,
@@ -218,6 +206,7 @@ export const HouseholdProvider = ({ children }: PropsWithChildren) => {
         householdsData,
         householdsLoading,
         activeLoading,
+        switchMutation.isPending,
         isInitialized,
         switchHousehold,
         refetch,

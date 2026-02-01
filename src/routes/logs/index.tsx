@@ -306,7 +306,7 @@ const LogsPage = () => {
             </DialogDescription>
           </DialogHeader>
           <TransactionForm
-            key={editingTransaction?.id ?? 'new'}
+            key={isModalOpen ? (editingTransaction?.id ?? 'new') : 'closed'}
             mode={editingTransaction ? 'edit' : 'create'}
             initialData={editingTransaction ?? undefined}
             onSubmitSuccess={closeModal}

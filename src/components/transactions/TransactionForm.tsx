@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { CalendarIcon } from 'lucide-react'
@@ -154,7 +154,6 @@ export const TransactionForm = ({
     register,
     handleSubmit,
     control,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<TransactionFormValues>({
@@ -163,8 +162,8 @@ export const TransactionForm = ({
   })
 
   // Watchers
-  const isInstallment = watch('is_installment')
-  const paymentMethod = watch('payment_method')
+  const isInstallment = useWatch({ control, name: 'is_installment' })
+  const paymentMethod = useWatch({ control, name: 'payment_method' })
   const isInstallmentDisabled = paymentMethod === 'débito'
 
   // Effect to reset installment when debit is selected

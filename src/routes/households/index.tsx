@@ -76,6 +76,7 @@ const HouseholdsPage = () => {
     const [editingMember, setEditingMember] = useState<HouseholdMemberWithProfile | null>(null)
     const [memberShareValue, setMemberShareValue] = useState('')
     const [removingMember, setRemovingMember] = useState<HouseholdMemberWithProfile | null>(null)
+    const [switchingId, setSwitchingId] = useState<string | null>(null)
 
     const canManage = isOwner || isAdmin
 
@@ -215,49 +216,78 @@ const HouseholdsPage = () => {
                                 const isActive = household.id === activeHousehold?.id
                                 const role = getHouseholdRole(household.id)
                                 const isHouseholdOwner = role === 'owner'
+                                const isSwitching = switchingId === household.id
+
+                                const handleSwitch = async () => {
+                                    if (!isActive && !switchingId) {
+                                        try {
+                                            setSwitchingId(household.id)
+                                            await switchHousehold(household.id)
+                                        } finally {
+                                            setSwitchingId(null)
+                                        }
+                                    }
+                                }
 
                                 return (
                                     <div
                                         key={household.id}
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={handleSwitch}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                handleSwitch()
+                                            }
+                                        }}
                                         className={cn(
                                             'flex items-center justify-between rounded-xl border p-4 transition-colors',
                                             isActive
                                                 ? 'border-primary/50 bg-primary/5'
-                                                : 'border-border/50 bg-muted/20 hover:bg-muted/40'
+                                                : 'border-border/50 bg-muted/20 hover:bg-muted/40 cursor-pointer',
+                                            isSwitching && 'opacity-70 cursor-wait'
                                         )}
                                     >
-                                        <div className="flex-1 min-w-0 space-y-1">
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-medium truncate">{household.name}</span>
-                                                {isActive && (
-                                                    <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                                        <div className="flex items-center gap-4 min-w-0 flex-1">
+                                            {/* Radio Indicator or Loading Spinner */}
+                                            <div className={cn(
+                                                "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors",
+                                                isActive ? "border-primary bg-primary text-primary-foreground" : "border-muted-foreground",
+                                                isSwitching && "border-transparent"
+                                            )}>
+                                                {isSwitching ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                                                ) : isActive && (
+                                                    <Check className="h-3 w-3" />
                                                 )}
                                             </div>
-                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                <span>{household.currency ?? 'BRL'}</span>
-                                                <span>-</span>
-                                                <span>Venc. dia {household.fixed_due_day ?? 5}</span>
+
+                                            <div className="space-y-1 min-w-0">
+                                                <div className="flex items-center gap-2">
+                                                    <span className={cn("font-medium truncate", isActive && "text-primary")}>
+                                                        {household.name}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                    <span>{household.currency ?? 'BRL'}</span>
+                                                    <span>-</span>
+                                                    <span>Venc. dia {household.fixed_due_day ?? 5}</span>
+                                                </div>
+                                                <div className="pt-1">{getRoleBadge(role)}</div>
                                             </div>
-                                            <div className="pt-1">{getRoleBadge(role)}</div>
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            {!isActive && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => switchHousehold(household.id)}
-                                                    className="text-xs"
-                                                >
-                                                    Ativar
-                                                </Button>
-                                            )}
                                             {isHouseholdOwner && (
                                                 <>
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
                                                         className="h-8 w-8"
-                                                        onClick={() => openEdit(household)}
+                                                        disabled={isSwitching}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            openEdit(household)
+                                                        }}
                                                     >
                                                         <Edit2 className="h-4 w-4" />
                                                     </Button>
@@ -265,7 +295,11 @@ const HouseholdsPage = () => {
                                                         variant="ghost"
                                                         size="icon"
                                                         className="h-8 w-8 text-destructive hover:text-destructive"
-                                                        onClick={() => openDelete(household)}
+                                                        disabled={isSwitching}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            openDelete(household)
+                                                        }}
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
@@ -326,7 +360,7 @@ const HouseholdsPage = () => {
                                                 </div>
                                                 <div className="pt-1">{getRoleBadge(member.role)}</div>
                                             </div>
-                                            {canManage && !isOwnerMember && (
+                                            {canManage && (
                                                 <div className="flex items-center gap-1">
                                                     <Button
                                                         variant="ghost"
@@ -336,7 +370,7 @@ const HouseholdsPage = () => {
                                                     >
                                                         <Edit2 className="h-4 w-4" />
                                                     </Button>
-                                                    {isOwner && (
+                                                    {isOwner && !isOwnerMember && (
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
@@ -359,6 +393,7 @@ const HouseholdsPage = () => {
 
             {/* Household Form Dialog */}
             <HouseholdForm
+                key={formOpen ? (editingHousehold?.id ?? 'new') : 'closed'}
                 open={formOpen}
                 onOpenChange={(open) => {
                     setFormOpen(open)
