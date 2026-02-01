@@ -14,7 +14,10 @@ type Invite = {
 }
 
 // Type for invite with joined relations (used in useInviteByToken)
-export type InviteWithRelations = Invite & {
+export type InviteWithRelations = Omit<Invite, 'invited_by' | 'created_at' | 'expires_at'> & {
+    invited_by: string | null
+    created_at: string | null
+    expires_at: string | null
     households: { name: string } | null
     profiles: { name: string } | null
 }
@@ -199,13 +202,12 @@ export const useInviteByToken = (token: string | undefined) => {
                 role: result.role,
                 status: result.status,
                 // Nested objects structure required by UI
-                households: { name: result.household_name },
-                profiles: { name: result.inviter_name },
-                // Fields not returned by RPC but needed for type compatibility
-                invited_by: '',
-                created_at: '',
-                expires_at: '',
-            } as unknown as InviteWithRelations
+                households: result.household_name ? { name: result.household_name } : null,
+                profiles: result.inviter_name ? { name: result.inviter_name } : null,
+                invited_by: result.invited_by ?? null,
+                created_at: result.created_at ?? null,
+                expires_at: result.expires_at ?? null,
+            }
         },
     })
 }

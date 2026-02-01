@@ -71,7 +71,10 @@ export default function InvitePage() {
     }
 
     // Check invite status
-    const isExpired = invite.status === 'expired' || new Date(invite.expires_at) < new Date()
+    const expiresAt = invite.expires_at ? new Date(invite.expires_at) : null
+    const isExpired =
+        invite.status === 'expired' ||
+        (expiresAt ? Number.isNaN(expiresAt.getTime()) || expiresAt < new Date() : true)
     const isAccepted = invite.status === 'accepted'
     const isRevoked = invite.status === 'revoked'
 
