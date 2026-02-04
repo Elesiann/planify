@@ -309,6 +309,8 @@ const LogsPage = () => {
             key={isModalOpen ? (editingTransaction?.id ?? 'new') : 'closed'}
             mode={editingTransaction ? 'edit' : 'create'}
             initialData={editingTransaction ?? undefined}
+            selectedMonth={month}
+            selectedYear={year}
             onSubmitSuccess={closeModal}
             onCancel={closeModal}
           />

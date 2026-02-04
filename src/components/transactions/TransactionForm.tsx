@@ -115,6 +115,8 @@ const addMonths = (date: Date, monthsToAdd: number) => {
 type TransactionFormProps = {
   mode: 'create' | 'edit'
   initialData?: Transaction
+  selectedMonth?: number
+  selectedYear?: number
   onSubmitSuccess?: () => void
   onCancel: () => void
 }
@@ -122,6 +124,8 @@ type TransactionFormProps = {
 export const TransactionForm = ({
   mode,
   initialData,
+  selectedMonth,
+  selectedYear,
   onSubmitSuccess,
   onCancel,
 }: TransactionFormProps) => {
@@ -133,9 +137,21 @@ export const TransactionForm = ({
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [isFirstInstallmentCalendarOpen, setIsFirstInstallmentCalendarOpen] = useState(false)
 
-  const defaultValues = useMemo(
-    () => ({
-      date: initialData?.date ? new Date(initialData.date) : new Date(),
+  const defaultValues = useMemo(() => {
+    // Generate default date based on selected month/year or current date
+    const getDefaultDate = () => {
+      if (initialData?.date) {
+        return new Date(initialData.date)
+      }
+      if (selectedMonth && selectedYear) {
+        // Use day 15 of the selected month as default to avoid edge cases
+        return new Date(selectedYear, selectedMonth - 1, 15)
+      }
+      return new Date()
+    }
+
+    return {
+      date: getDefaultDate(),
       description: initialData?.description ?? '',
       category: parseCategory(initialData?.category),
       payment_method: parsePaymentMethod(initialData?.payment_method),
@@ -146,9 +162,8 @@ export const TransactionForm = ({
       first_installment_date: initialData?.first_installment_date
         ? new Date(initialData.first_installment_date)
         : undefined,
-    }),
-    [initialData],
-  )
+    }
+  }, [initialData, selectedMonth, selectedYear])
 
   const {
     register,
