@@ -34,10 +34,29 @@ export const brlToNumber = (value?: string | null): number | null => {
 
 export const parseDatePtBr = (value?: string | null): string | null => {
   if (!value) return null
-  const parts = value.trim().split('/')
-  if (parts.length !== 3) return null
-  const [day, month, year] = parts.map((part) => Number(part))
-  if (!day || !month || !year) return null
+  const match = value.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+  if (!match) return null
+
+  const day = Number(match[1])
+  const month = Number(match[2])
+  const year = Number(match[3])
+
+  if (!Number.isInteger(day) || !Number.isInteger(month) || !Number.isInteger(year)) {
+    return null
+  }
+  if (month < 1 || month > 12 || day < 1 || day > 31) {
+    return null
+  }
+
+  const parsed = new Date(Date.UTC(year, month - 1, day))
+  if (
+    parsed.getUTCFullYear() !== year ||
+    parsed.getUTCMonth() !== month - 1 ||
+    parsed.getUTCDate() !== day
+  ) {
+    return null
+  }
+
   const iso = `${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${day
     .toString()
     .padStart(2, '0')}`
