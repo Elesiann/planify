@@ -13,6 +13,7 @@ export type HouseholdMemberWithProfile = {
     profile: {
         id: string
         name: string | null
+        avatar_url: string | null
         income: number | null
     } | null
 }
@@ -75,6 +76,7 @@ export const useHouseholdMembers = () => {
                     profile:profiles!household_members_user_id_fkey (
                         id,
                         name,
+                        avatar_url,
                         income
                     )
                 `)

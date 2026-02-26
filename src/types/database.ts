@@ -19,3 +19,29 @@ export type FixedExpenseInsert =
 
 export type FixedExpenseUpdate =
     Database['public']['Tables']['fixed_expenses']['Update'];
+
+type ShoppingListPriority = 'low' | 'medium' | 'high'
+type ShoppingListStatus = 'pending' | 'ordered' | 'purchased' | 'archived'
+
+type ShoppingListItemRow = Database['public']['Tables']['shopping_list_items']['Row']
+
+export type ShoppingListItem = Omit<ShoppingListItemRow, 'priority' | 'status'> & {
+  priority: ShoppingListPriority
+  status: ShoppingListStatus
+}
+
+export type ShoppingListItemInsert = Omit<
+  Database['public']['Tables']['shopping_list_items']['Insert'],
+  'priority' | 'status'
+> & {
+  priority?: ShoppingListPriority
+  status?: ShoppingListStatus
+}
+
+export type ShoppingListItemUpdate = Omit<
+  Database['public']['Tables']['shopping_list_items']['Update'],
+  'priority' | 'status'
+> & {
+  priority?: ShoppingListPriority
+  status?: ShoppingListStatus
+}

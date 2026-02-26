@@ -29,24 +29,10 @@ import {
   useUpdateTransaction,
 } from '@/hooks/useTransactionMutations'
 import type { Transaction } from '@/types/database'
-
-const CATEGORY_OPTIONS = [
-  'alimentação',
-  'despesa',
-  'eletrodoméstico',
-  'móveis',
-  'saúde',
-  'item pra casa',
-  'lanche',
-  'serviços',
-  'transporte',
-  'lazer',
-  'outros',
-] as const
+import { CATEGORY_OPTIONS, type CategoryOption } from '@/lib/constants'
 
 const PAYMENT_METHOD_OPTIONS = ['crédito', 'débito'] as const
 
-type CategoryOption = (typeof CATEGORY_OPTIONS)[number]
 type PaymentOption = (typeof PAYMENT_METHOD_OPTIONS)[number]
 
 const parseCategory = (value?: string | null): CategoryOption => {

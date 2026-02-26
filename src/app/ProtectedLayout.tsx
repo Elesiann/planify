@@ -4,10 +4,11 @@ import { AppShell } from '@/components/AppShell'
 import { RequireAuth, useAuth } from '@/lib/auth'
 import { useHousehold } from '@/lib/HouseholdProvider'
 
-const getActiveTab = (pathname: string): 'resumo' | 'logs' | 'fixos' => {
+const getActiveTab = (pathname: string): 'resumo' | 'logs' | 'fixos' | 'lista' => {
   if (!pathname) return 'resumo'
   if (pathname === '/logs' || pathname.startsWith('/logs/')) return 'logs'
   if (pathname === '/fixed' || pathname.startsWith('/fixed/')) return 'fixos'
+  if (pathname === '/list' || pathname.startsWith('/list/')) return 'lista'
   return 'resumo'
 }
 
@@ -15,6 +16,7 @@ const getPageTitle = (pathname: string): string => {
   if (!pathname || pathname === '/') return 'Planify | Resumo'
   if (pathname === '/logs' || pathname.startsWith('/logs/')) return 'Planify | Logs'
   if (pathname === '/fixed' || pathname.startsWith('/fixed/')) return 'Planify | Fixos'
+  if (pathname === '/list' || pathname.startsWith('/list/')) return 'Planify | Lista'
   if (pathname === '/profile') return 'Planify | Perfil'
   if (pathname === '/households') return 'Planify | Households'
   if (pathname.startsWith('/tools/')) return 'Planify | Ferramentas'

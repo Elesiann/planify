@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { Check, ChevronDown, Home, LogOut, Menu, Moon, Settings, Sun, User } from 'lucide-react'
+import { Check, ChevronDown, Home, ListChecks, LogOut, Menu, Moon, Settings, Sun, User } from 'lucide-react'
 import type { PropsWithChildren } from 'react'
 import toast from 'react-hot-toast'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -20,7 +20,7 @@ import { useAuth } from '../lib/auth'
 import { useTheme } from '../lib/ThemeProvider'
 
 type AppShellProps = PropsWithChildren<{
-  activeTab: 'resumo' | 'logs' | 'fixos'
+  activeTab: 'resumo' | 'logs' | 'fixos' | 'lista'
 }>
 
 const navigation = [
@@ -64,7 +64,43 @@ export const AppShell = ({ children, activeTab }: AppShellProps) => {
                     <span className="sr-only">Menu de navegação</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-48 p-2">
+                <DropdownMenuContent align="start" className="w-56 p-2">
+                  {/* Household section */}
+                  {households.length > 0 && (
+                    <>
+                      <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                        Household
+                      </DropdownMenuLabel>
+                      {households.map((h) => (
+                        <DropdownMenuItem
+                          key={h.id}
+                          className={cn(
+                            'cursor-pointer flex items-center justify-between',
+                            households.length === 1 && 'pointer-events-none',
+                          )}
+                          onClick={() => {
+                            if (h.id === activeHousehold?.id) return
+                            switchHousehold(h.id).catch((error) => {
+                              console.error('Failed to switch household:', error)
+                              toast.error(
+                                `Erro ao trocar para a household "${h.name}": ${error instanceof Error ? error.message : 'Erro desconhecido'}`
+                              )
+                            })
+                          }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Home className="h-4 w-4 text-muted-foreground" />
+                            <span className="truncate">{h.name}</span>
+                          </div>
+                          {h.id === activeHousehold?.id && (
+                            <Check className="h-4 w-4 text-primary" />
+                          )}
+                        </DropdownMenuItem>
+                      ))}
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  {/* Navigation section */}
                   <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
                     Navegação
                   </DropdownMenuLabel>
@@ -89,54 +125,56 @@ export const AppShell = ({ children, activeTab }: AppShellProps) => {
               Planify
             </div>
 
-            {/* Household Switcher */}
+            {/* Household Switcher — desktop only */}
             {households.length > 0 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={households.length === 1}
-                    className="ml-1 gap-1 rounded-lg border border-border/50 bg-card/50 px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-primary/15 md:px-3 md:text-sm"
-                  >
-                    <Home className="h-3.5 w-3.5" />
-                    <span className="max-w-[80px] truncate md:max-w-[120px]">
-                      {activeHousehold?.name ?? 'Selecionar'}
-                    </span>
-                    {households.length > 1 && <ChevronDown className="h-3 w-3 opacity-50" />}
-                  </Button>
-                </DropdownMenuTrigger>
-                {households.length > 1 && (
-                  <DropdownMenuContent align="start" className="w-56 p-2">
-                    <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                      Suas Households
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {households.map((h) => (
-                      <DropdownMenuItem
-                        key={h.id}
-                        className="cursor-pointer flex items-center justify-between"
-                        onClick={() => {
-                          switchHousehold(h.id).catch((error) => {
-                            console.error('Failed to switch household:', error)
-                            toast.error(
-                              `Erro ao trocar para a household "${h.name}": ${error instanceof Error ? error.message : 'Erro desconhecido'}`
-                            )
-                          })
-                        }}
-                      >
-                        <div className="flex items-center gap-2">
-                          <Home className="h-4 w-4 text-muted-foreground" />
-                          <span className="truncate">{h.name}</span>
-                        </div>
-                        {h.id === activeHousehold?.id && (
-                          <Check className="h-4 w-4 text-primary" />
-                        )}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                )}
-              </DropdownMenu>
+              <div className="hidden md:block">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      disabled={households.length === 1}
+                      className="ml-1 gap-1 rounded-lg border border-border/50 bg-card/50 px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-primary/15 md:px-3 md:text-sm"
+                    >
+                      <Home className="h-3.5 w-3.5" />
+                      <span className="max-w-[80px] truncate md:max-w-[120px]">
+                        {activeHousehold?.name ?? 'Selecionar'}
+                      </span>
+                      {households.length > 1 && <ChevronDown className="h-3 w-3 opacity-50" />}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  {households.length > 1 && (
+                    <DropdownMenuContent align="start" className="w-56 p-2">
+                      <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                        Suas Households
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {households.map((h) => (
+                        <DropdownMenuItem
+                          key={h.id}
+                          className="cursor-pointer flex items-center justify-between"
+                          onClick={() => {
+                            switchHousehold(h.id).catch((error) => {
+                              console.error('Failed to switch household:', error)
+                              toast.error(
+                                `Erro ao trocar para a household "${h.name}": ${error instanceof Error ? error.message : 'Erro desconhecido'}`
+                              )
+                            })
+                          }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Home className="h-4 w-4 text-muted-foreground" />
+                            <span className="truncate">{h.name}</span>
+                          </div>
+                          {h.id === activeHousehold?.id && (
+                            <Check className="h-4 w-4 text-primary" />
+                          )}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  )}
+                </DropdownMenu>
+              </div>
             )}
 
             {/* Invite Manager - only visible to owners/admins */}
@@ -171,13 +209,25 @@ export const AppShell = ({ children, activeTab }: AppShellProps) => {
             </div>
           </nav>
 
-          {/* Right side: Theme + User */}
+          {/* Right side: Lista + Theme + User */}
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Button
+              asChild
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "rounded-full border border-transparent text-muted-foreground transition duration-150 hover:-translate-y-0.5 hover:border-border/80 hover:bg-primary hover:text-foreground",
+                activeTab === 'lista' && "border-primary/60 bg-primary/15 text-foreground"
+              )}
+              aria-label="Lista de compras"
+            >
+              <Link to="/list"><ListChecks className="h-4 w-4" /></Link>
+            </Button>
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="rounded-full border border-transparent text-muted-foreground transition duration-150 hover:-translate-y-0.5 hover:border-border/80 hover:bg-primary hover:text-foreground"
+              className="hidden md:inline-flex rounded-full border border-transparent text-muted-foreground transition duration-150 hover:-translate-y-0.5 hover:border-border/80 hover:bg-primary hover:text-foreground"
               onClick={toggleTheme}
               aria-label={theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
             >
@@ -287,6 +337,13 @@ export const AppShell = ({ children, activeTab }: AppShellProps) => {
                       <Settings className="h-4 w-4" />
                       Gerenciar Households
                     </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer flex items-center gap-2"
+                    onClick={toggleTheme}
+                  >
+                    {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                    {theme === 'dark' ? 'Tema claro' : 'Tema escuro'}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
 

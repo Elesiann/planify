@@ -3,6 +3,7 @@ import { ProtectedLayout } from './ProtectedLayout'
 import DashboardPage from '../routes'
 import FixedPage from '../routes/fixed'
 import LogsPage from '../routes/logs'
+import ListaPage from '../routes/list'
 import LoginPage from '../routes/login'
 import ProfilePage from '../routes/profile'
 import OnboardingPage from '../routes/onboarding'
@@ -74,11 +75,17 @@ const householdsRoute = createRoute({
   component: HouseholdsPage,
 })
 
+const listaRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/list',
+  component: ListaPage,
+})
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   onboardingRoute,
   inviteRoute,
-  protectedRoute.addChildren([dashboardRoute, logsRoute, fixedRoute, importLogsRoute, profileRoute, householdsRoute]),
+  protectedRoute.addChildren([dashboardRoute, logsRoute, fixedRoute, importLogsRoute, profileRoute, householdsRoute, listaRoute]),
 ])
 
 export const router = createRouter({

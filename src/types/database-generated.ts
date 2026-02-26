@@ -206,6 +206,76 @@ export type Database = {
           },
         ]
       }
+      shopping_list_items: {
+        Row: {
+          assigned_to: string | null
+          category: string | null
+          created_at: string
+          created_by: string
+          household_id: string
+          id: string
+          name: string
+          notes: string | null
+          priority: string
+          purchased_at: string | null
+          sort_order: number
+          status: string
+          url: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          category?: string | null
+          created_at?: string
+          created_by: string
+          household_id: string
+          id?: string
+          name: string
+          notes?: string | null
+          priority?: string
+          purchased_at?: string | null
+          sort_order?: number
+          status?: string
+          url?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          category?: string | null
+          created_at?: string
+          created_by?: string
+          household_id?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          priority?: string
+          purchased_at?: string | null
+          sort_order?: number
+          status?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopping_list_items_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shopping_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shopping_list_items_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           category: string | null
@@ -264,14 +334,47 @@ export type Database = {
           payment_method?: string | null
           total_amount?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transactions_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      accept_invite_by_token: { Args: { p_token: string }; Returns: Json }
+      create_household_for_user: {
+        Args: { p_currency?: string; p_fixed_due_day?: number; p_name: string }
+        Returns: string
+      }
+      get_invite_by_token: {
+        Args: { p_token: string }
+        Returns: {
+          household_id: string
+          household_name: string
+          id: string
+          inviter_name: string
+          role: string
+          status: string
+        }[]
+      }
+      get_invite_details: { Args: { invite_token: string }; Returns: Json }
+      get_user_household_ids: { Args: { user_uuid: string }; Returns: string[] }
+      is_household_admin: {
+        Args: { lookup_household_id: string }
+        Returns: boolean
+      }
+      is_household_member: {
+        Args: { lookup_household_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

@@ -10,3 +10,8 @@ export const fixedExpensesKeys = {
   all: ['fixed-expenses'] as const,
   byId: (id: string) => [...fixedExpensesKeys.all, 'byId', id] as const,
 }
+
+export const shoppingListKeys = {
+  all: ['shopping-list'] as const,
+  byHousehold: (householdId: string) => [...shoppingListKeys.all, householdId] as const,
+}
