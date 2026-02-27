@@ -1,7 +1,8 @@
 import { Link } from '@tanstack/react-router'
 import { Check, ChevronDown, Home, ListChecks, LogOut, Menu, Moon, Settings, Sun, User } from 'lucide-react'
-import type { PropsWithChildren } from 'react'
+import { useState, type PropsWithChildren } from 'react'
 import toast from 'react-hot-toast'
+import { QuickShoppingList } from '@/components/planify/QuickShoppingList'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,8 +26,9 @@ type AppShellProps = PropsWithChildren<{
 
 const navigation = [
   { label: 'Resumo', to: '/', tab: 'resumo' as const },
-  { label: 'Logs', to: '/logs', tab: 'logs' as const },
+  { label: 'Transações', to: '/logs', tab: 'logs' as const },
   { label: 'Fixos', to: '/fixed', tab: 'fixos' as const },
+  { label: 'Lista', to: '/list', tab: 'lista' as const },
 ]
 
 const getInitials = (name: string | null | undefined) => {
@@ -44,6 +46,7 @@ export const AppShell = ({ children, activeTab }: AppShellProps) => {
   const { data: profile } = useProfile()
   const { theme, toggleTheme } = useTheme()
   const { activeHousehold, households, switchHousehold } = useHousehold()
+  const [quickListOpen, setQuickListOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -212,17 +215,19 @@ export const AppShell = ({ children, activeTab }: AppShellProps) => {
           {/* Right side: Lista + Theme + User */}
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Button
-              asChild
+              type="button"
               variant="ghost"
               size="icon"
+              onClick={() => setQuickListOpen(true)}
               className={cn(
                 "rounded-full border border-transparent text-muted-foreground transition duration-150 hover:-translate-y-0.5 hover:border-border/80 hover:bg-primary hover:text-foreground",
-                activeTab === 'lista' && "border-primary/60 bg-primary/15 text-foreground"
+                quickListOpen && "border-primary/60 bg-primary/15 text-foreground"
               )}
-              aria-label="Lista de compras"
+              aria-label="Lista rápida de compras"
             >
-              <Link to="/list"><ListChecks className="h-4 w-4" /></Link>
+              <ListChecks className="h-4 w-4" />
             </Button>
+            <QuickShoppingList open={quickListOpen} onOpenChange={setQuickListOpen} />
             <Button
               type="button"
               variant="ghost"

@@ -171,6 +171,51 @@ export type Database = {
           },
         ]
       }
+      market_list_items: {
+        Row: {
+          checked: boolean
+          created_at: string
+          created_by: string
+          household_id: string
+          id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          checked?: boolean
+          created_at?: string
+          created_by: string
+          household_id: string
+          id?: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          checked?: boolean
+          created_at?: string
+          created_by?: string
+          household_id?: string
+          id?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "market_list_items_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           active_household_id: string | null

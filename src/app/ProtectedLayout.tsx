@@ -14,7 +14,7 @@ const getActiveTab = (pathname: string): 'resumo' | 'logs' | 'fixos' | 'lista' =
 
 const getPageTitle = (pathname: string): string => {
   if (!pathname || pathname === '/') return 'Planify | Resumo'
-  if (pathname === '/logs' || pathname.startsWith('/logs/')) return 'Planify | Logs'
+  if (pathname === '/logs' || pathname.startsWith('/logs/')) return 'Planify | Transações'
   if (pathname === '/fixed' || pathname.startsWith('/fixed/')) return 'Planify | Fixos'
   if (pathname === '/list' || pathname.startsWith('/list/')) return 'Planify | Lista'
   if (pathname === '/profile') return 'Planify | Perfil'

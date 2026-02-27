@@ -15,3 +15,8 @@ export const shoppingListKeys = {
   all: ['shopping-list'] as const,
   byHousehold: (householdId: string) => [...shoppingListKeys.all, householdId] as const,
 }
+
+export const marketListKeys = {
+  all: ['market-list'] as const,
+  byHousehold: (householdId: string) => [...marketListKeys.all, householdId] as const,
+}

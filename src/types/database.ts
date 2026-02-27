@@ -45,3 +45,7 @@ export type ShoppingListItemUpdate = Omit<
   priority?: ShoppingListPriority
   status?: ShoppingListStatus
 }
+
+export type MarketListItem = Database['public']['Tables']['market_list_items']['Row']
+export type MarketListItemInsert = Database['public']['Tables']['market_list_items']['Insert']
+export type MarketListItemUpdate = Database['public']['Tables']['market_list_items']['Update']
