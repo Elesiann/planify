@@ -40,6 +40,8 @@ export type NextDueExpense = {
 
 export type SummaryComputation = {
   totalGasto: number
+  totalVariables: number
+  totalFixed: number
   parteMemberA: number
   parteMemberB: number
   incomeMemberA: number
@@ -59,6 +61,8 @@ export type SummaryComputation = {
   diasConsiderados: number
   diasNoMes: number
   diasUteis: number
+  diasUteisConsiderados: number
+  isPastMonth: boolean
   serieDiaria: DailyPoint[]
 }
 
@@ -97,6 +101,18 @@ const countBusinessDays = (month: number, year: number, daysInMonth: number) => 
     }
   }
   return businessDays
+}
+
+const countBusinessDaysElapsed = (month: number, year: number, daysElapsed: number) => {
+  let businessDays = 0
+  for (let day = 1; day <= daysElapsed; day += 1) {
+    const date = new Date(year, month - 1, day)
+    const weekDay = date.getDay()
+    if (weekDay !== 0 && weekDay !== 6) {
+      businessDays += 1
+    }
+  }
+  return Math.max(1, businessDays)
 }
 
 export const buildDailySeries = (
@@ -201,11 +217,13 @@ export const buildMonthlySummary = (
   const totalGasto = totalVariables + totalFixed
   const diasNoMes = getDaysInMonth(month, year)
   const diasConsiderados = Math.max(1, Math.min(diasNoMes, getDaysElapsed(month, year, diasNoMes)))
+  const isPastMonth = diasConsiderados === diasNoMes
   const diasUteis = countBusinessDays(month, year, diasNoMes)
-  const mediaDiaria = diasConsiderados > 0 ? totalGasto / diasConsiderados : 0
+  const diasUteisConsiderados = countBusinessDaysElapsed(month, year, diasConsiderados)
+  const mediaDiaria = diasConsiderados > 0 ? totalVariables / diasConsiderados : 0
   const custoPorDia = diasNoMes > 0 ? totalGasto / diasNoMes : 0
-  const custoPorDiaUtil = diasUteis > 0 ? totalGasto / diasUteis : 0
-  const projecaoFimMes = mediaDiaria * diasNoMes
+  const custoPorDiaUtil = diasUteisConsiderados > 0 ? totalVariables / diasUteisConsiderados : 0
+  const projecaoFimMes = mediaDiaria * diasNoMes + totalFixed
 
   const serieDiaria = buildDailySeries(transactions, fixedExpenses, diasNoMes, true, fixedDueDay)
 
@@ -232,6 +250,8 @@ export const buildMonthlySummary = (
 
   return {
     totalGasto,
+    totalVariables,
+    totalFixed,
     parteMemberA,
     parteMemberB,
     ...incomeStats,
@@ -246,6 +266,8 @@ export const buildMonthlySummary = (
     diasConsiderados,
     diasNoMes,
     diasUteis,
+    diasUteisConsiderados,
+    isPastMonth,
     serieDiaria,
   }
 }
@@ -278,6 +300,8 @@ export const buildAnnualSummary = (
 
   return {
     totalGasto,
+    totalVariables,
+    totalFixed: totalFixedAnnual,
     parteMemberA,
     parteMemberB,
     ...incomeStats,
@@ -292,6 +316,8 @@ export const buildAnnualSummary = (
     diasConsiderados: 0,
     diasNoMes: 0,
     diasUteis: 0,
+    diasUteisConsiderados: 0,
+    isPastMonth: false,
     serieDiaria: [],
   }
 }

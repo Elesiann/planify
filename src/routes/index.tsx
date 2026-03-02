@@ -303,18 +303,24 @@ const DashboardPage = () => {
     {
       label: 'Gasto médio por dia',
       value: currencyFormatter.format(monthlySummary.mediaDiaria),
-      description: `Baseado em ${monthlySummary.diasConsiderados} dia${monthlySummary.diasConsiderados === 1 ? '' : 's'} já passados.`,
+      description: `Baseado em ${monthlySummary.diasConsiderados} dia${monthlySummary.diasConsiderados === 1 ? '' : 's'} (somente variáveis).`,
     },
     {
       label: 'Custo por dia útil',
       value: currencyFormatter.format(monthlySummary.custoPorDiaUtil),
-      description: `${monthlySummary.diasUteis} dias úteis no mês selecionado.`,
+      description: `${monthlySummary.diasUteisConsiderados} dia${monthlySummary.diasUteisConsiderados === 1 ? '' : 's'} útei${monthlySummary.diasUteisConsiderados === 1 ? 'l' : 's'} considerados no período.`,
     },
-    {
-      label: 'Projeção de fim de mês',
-      value: currencyFormatter.format(monthlySummary.projecaoFimMes),
-      description: 'Estimativa caso o ritmo atual permaneça.',
-    },
+    monthlySummary.isPastMonth
+      ? {
+          label: 'Total realizado',
+          value: currencyFormatter.format(monthlySummary.totalGasto),
+          description: 'Mês encerrado.',
+        }
+      : {
+          label: 'Projeção de fim de mês',
+          value: currencyFormatter.format(monthlySummary.projecaoFimMes),
+          description: 'Variáveis projetadas + fixos do mês.',
+        },
   ]
 
   insightTiles.push(
