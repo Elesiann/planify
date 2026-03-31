@@ -66,6 +66,14 @@ export type SummaryComputation = {
   serieDiaria: DailyPoint[]
 }
 
+export type SettlementData = {
+  memberAPaid: number      // How much member A actually paid
+  memberBPaid: number      // How much member B actually paid
+  memberAShouldPay: number // Member A's theoretical share
+  memberBShouldPay: number // Member B's theoretical share
+  balance: number          // Positive = A overpaid, negative = B overpaid
+}
+
 const normalizeCategory = (category?: string | null) => {
   if (!category) return 'Outros'
   return category.charAt(0).toUpperCase() + category.slice(1)
@@ -319,6 +327,47 @@ export const buildAnnualSummary = (
     diasUteisConsiderados: 0,
     isPastMonth: false,
     serieDiaria: [],
+  }
+}
+
+export const buildSettlement = (
+  transactions: TransactionWithOwner[],
+  fixedExpenses: FixedExpense[],
+  config: FinancialConfig,
+  currentUserId: string,
+): SettlementData => {
+  // Sum how much each member actually paid from variable transactions
+  let memberAPaid = 0
+  let memberBPaid = 0
+
+  for (const t of transactions) {
+    if (t.paid_by === currentUserId) {
+      memberAPaid += t.total_amount
+    } else {
+      memberBPaid += t.total_amount
+    }
+  }
+
+  // Fixed expenses don't have paid_by — attribute to current user
+  // since they typically manage household bills
+  const totalFixed = sumFixedExpenses(fixedExpenses)
+  memberAPaid += totalFixed
+
+  const total = memberAPaid + memberBPaid
+
+  // How much each should pay based on share ratio
+  const memberAShouldPay = total * config.shareMemberA
+  const memberBShouldPay = total * config.shareMemberB
+
+  // Positive balance = member A overpaid (B owes A)
+  const balance = memberAPaid - memberAShouldPay
+
+  return {
+    memberAPaid,
+    memberBPaid,
+    memberAShouldPay,
+    memberBShouldPay,
+    balance,
   }
 }
 

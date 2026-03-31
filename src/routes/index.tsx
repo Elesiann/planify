@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import { HeroCard } from '@/components/planify/HeroCard'
+import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import {
@@ -16,7 +18,10 @@ import { useHouseholdFinancialConfig } from '@/hooks/useHouseholdMembers'
 import { useHousehold } from '@/lib/HouseholdProvider'
 import { SummaryCharts } from '@/components/summary/SummaryCharts'
 import { DailyTrendChart } from '@/components/summary/DailyTrendChart'
-import { buildAnnualSummary, buildDailySeries, buildMonthlySummary, type FinancialConfig, DEFAULT_FINANCIAL_CONFIG } from '@/lib/summary'
+import { buildAnnualSummary, buildDailySeries, buildMonthlySummary, buildSettlement, type FinancialConfig, DEFAULT_FINANCIAL_CONFIG } from '@/lib/summary'
+import { SettlementCard } from '@/components/summary/SettlementCard'
+import { SpendingHeatmap } from '@/components/summary/SpendingHeatmap'
+import { useAuth } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 
 const currencyFormatter = new Intl.NumberFormat('pt-BR', {
@@ -165,6 +170,13 @@ const DashboardPage = () => {
     () =>
       buildMonthlySummary(previousTransactions, fixedExpenses, previousPeriod.month, previousPeriod.year, financialConfig, fixedDueDay),
     [previousTransactions, fixedExpenses, previousPeriod.month, previousPeriod.year, financialConfig, fixedDueDay],
+  )
+
+  const { user } = useAuth()
+
+  const settlement = useMemo(
+    () => buildSettlement(transactions, fixedExpenses, financialConfig, user?.id ?? ''),
+    [transactions, fixedExpenses, financialConfig, user?.id],
   )
 
   const isLoading = isLoadingTransactions || isLoadingAnnual || isLoadingFixed || isLoadingPrevious
@@ -414,12 +426,17 @@ const DashboardPage = () => {
         </Card>
       ) : !hasData ? (
         <Card className="rounded-2xl border border-border/60 bg-card/80 shadow-planify-soft">
-          <CardHeader>
-            <CardTitle>Nenhum dado encontrado</CardTitle>
-            <CardDescription>
-              Cadastre transações ou despesas fixas para visualizar o resumo deste mês.
+          <CardHeader className="text-center">
+            <CardTitle>Nenhum dado neste período</CardTitle>
+            <CardDescription className="mx-auto max-w-md">
+              Registre sua primeira transação pra ver o resumo financeiro do mês — total gasto, parte de cada pessoa e insights automáticos.
             </CardDescription>
           </CardHeader>
+          <CardContent className="flex justify-center">
+            <Button asChild>
+              <Link to="/logs">Criar transação</Link>
+            </Button>
+          </CardContent>
         </Card>
       ) : (
         <>
@@ -436,6 +453,12 @@ const DashboardPage = () => {
               </div>
             </CardContent>
           </Card>
+
+          <SettlementCard
+            settlement={settlement}
+            memberALabel={labels.getMemberALabel()}
+            memberBLabel={labels.getMemberBLabel()}
+          />
 
           <Card className="rounded-2xl border border-border/60 bg-card/70 shadow-planify-soft">
             <CardHeader className="pb-3">
@@ -540,6 +563,8 @@ const DashboardPage = () => {
               </div>
             </CardContent>
           </Card>
+
+          <SpendingHeatmap />
         </>
       )}
     </section>
