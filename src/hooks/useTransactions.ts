@@ -82,11 +82,13 @@ export const useTransactions = ({ month, year }: { month: number; year: number }
 }
 
 export const useTransaction = (id?: string) => {
+  const { activeHouseholdId } = useHousehold()
+
   return useQuery({
     queryKey: id ? transactionsKeys.byId(id) : transactionsKeys.byId(''),
-    enabled: Boolean(id),
+    enabled: Boolean(id) && Boolean(activeHouseholdId),
     queryFn: async (): Promise<Transaction | null> => {
-      if (!id) {
+      if (!id || !activeHouseholdId) {
         return null
       }
 
@@ -94,6 +96,7 @@ export const useTransaction = (id?: string) => {
         .from('transactions')
         .select('*')
         .eq('id', id)
+        .eq('household_id', activeHouseholdId)
         .maybeSingle()
 
       if (error) {
