@@ -12,7 +12,7 @@ import {
 import type { FixedExpense } from '@/types/database'
 
 const fixedExpenseSchema = z.object({
-  description: z.string().min(1, 'Descrição obrigatória'),
+  description: z.string().min(1, 'Descrição obrigatória').max(500, 'Máximo 500 caracteres'),
   amount: z.number().positive('Valor deve ser positivo'),
 })
 

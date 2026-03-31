@@ -70,10 +70,13 @@ export const useCreateMarketListItem = () => {
     mutationFn: async (name: string) => {
       if (!activeHouseholdId || !user) throw new Error('Nenhum household ativo.')
 
+      const sanitizedName = name.trim().slice(0, 200)
+      if (!sanitizedName) throw new Error('Nome não pode ser vazio.')
+
       const { data, error } = await supabase
         .from('market_list_items')
         .insert({
-          name,
+          name: sanitizedName,
           household_id: activeHouseholdId,
           created_by: user.id,
           sort_order: Date.now(),

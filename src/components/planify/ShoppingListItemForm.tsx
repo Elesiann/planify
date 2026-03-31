@@ -19,10 +19,10 @@ import { useHouseholdMembers } from '@/hooks/useHouseholdMembers'
 import type { ShoppingListItem } from '@/types/database'
 
 const shoppingItemSchema = z.object({
-  name: z.string().min(1, 'Nome obrigatório'),
+  name: z.string().min(1, 'Nome obrigatório').max(200, 'Máximo 200 caracteres'),
   category: z.string().nullable().optional(),
   priority: z.enum(['low', 'medium', 'high']),
-  notes: z.string().nullable().optional(),
+  notes: z.string().max(1000, 'Máximo 1000 caracteres').nullable().optional(),
   assigned_to: z.string().nullable().optional(),
   url: z.string().refine((v) => !v || z.string().url().safeParse(v).success, 'URL inválida').optional(),
 })

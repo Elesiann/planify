@@ -88,6 +88,7 @@ export function HouseholdForm({
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="Ex: Casa Principal"
+                            maxLength={100}
                             required
                         />
                     </div>

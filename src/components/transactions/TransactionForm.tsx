@@ -50,7 +50,7 @@ const parsePaymentMethod = (value?: string | null): PaymentOption => {
 const transactionSchema = z
   .object({
     date: z.date(),
-    description: z.string().min(1, 'Descrição obrigatória'),
+    description: z.string().min(1, 'Descrição obrigatória').max(500, 'Máximo 500 caracteres'),
     category: z.enum(CATEGORY_OPTIONS),
     payment_method: z.enum(PAYMENT_METHOD_OPTIONS),
     total_amount: z.number().positive('Valor deve ser positivo'),
