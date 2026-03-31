@@ -130,8 +130,12 @@ export const TransactionForm = ({
         return new Date(initialData.date)
       }
       if (selectedMonth && selectedYear) {
-        // Use day 15 of the selected month as default to avoid edge cases
-        return new Date(selectedYear, selectedMonth - 1, 15)
+        const today = new Date()
+        // If viewing the current month, use today's date; otherwise use day 1
+        if (selectedYear === today.getFullYear() && selectedMonth === today.getMonth() + 1) {
+          return today
+        }
+        return new Date(selectedYear, selectedMonth - 1, 1)
       }
       return new Date()
     }
