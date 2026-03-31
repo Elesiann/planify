@@ -46,9 +46,9 @@ const LoginPage = () => {
       <div className="w-full max-w-md space-y-6 rounded-2xl border border-slate-200 bg-white/80 p-8 text-center shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
         <div className="space-y-2">
           <p className="text-sm uppercase tracking-wide text-slate-400">Planify</p>
-          <h1 className="text-2xl font-semibold">Entrar</h1>
+          <h1 className="text-2xl font-semibold">Controle financeiro a dois</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Use sua conta Google autorizada para acessar.
+            Registre gastos, divida despesas e veja pra onde vai o dinheiro do casal.
           </p>
         </div>
         <button

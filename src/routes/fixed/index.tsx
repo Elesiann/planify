@@ -132,9 +132,12 @@ const FixedExpensesPage = () => {
 
         {!isLoading && !isError && expenses.length === 0 && (
           <div className="flex flex-col items-center justify-center gap-3 py-10 text-center text-sm text-muted-foreground">
-            <p>Nenhuma despesa fixa cadastrada.</p>
+            <p className="font-medium text-foreground">Nenhuma despesa fixa cadastrada</p>
+            <p className="max-w-sm">
+              Adicione contas recorrentes como aluguel, internet e luz — elas entram automaticamente no resumo de todo mês.
+            </p>
             <Button variant="outline" onClick={openCreateModal}>
-              Adicionar agora
+              Adicionar despesa fixa
             </Button>
           </div>
         )}
