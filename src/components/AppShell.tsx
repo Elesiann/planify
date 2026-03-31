@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { Check, ChevronDown, Home, ListChecks, LogOut, Menu, Moon, Settings, Sun, User } from 'lucide-react'
 import { useState, type PropsWithChildren } from 'react'
 import toast from 'react-hot-toast'
+import { CommandPalette } from '@/components/CommandPalette'
 import { QuickShoppingList } from '@/components/planify/QuickShoppingList'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -367,6 +368,7 @@ export const AppShell = ({ children, activeTab }: AppShellProps) => {
         </div>
       </header>
       <main className="container py-8">{children}</main>
+      <CommandPalette />
     </div>
   )
 }
