@@ -3,32 +3,29 @@ name: Keep Supabase Awake
 on:
   schedule:
     # Supabase free projects pause after 7 days of inactivity.
-    # Run every 3 days to leave room for delayed or skipped scheduled jobs.
-    - cron: '0 9 */3 * *'
+    # Run every 5 days to leave room for delayed or skipped scheduled jobs.
+    - cron: '0 0 */5 * *'
   workflow_dispatch:
 
 jobs:
   ping:
-    name: Ping Supabase
+    name: Ping /health
     runs-on: ubuntu-latest
     timeout-minutes: 2
 
     steps:
-      - name: Query Supabase REST API
+      - name: Ping health endpoint
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          APP_URL: ${{ secrets.APP_URL }}
         run: |
           set -euo pipefail
 
-          if [ -z "${SUPABASE_URL}" ] || [ -z "${SUPABASE_ANON_KEY}" ]; then
-            echo "Missing SUPABASE_URL or SUPABASE_ANON_KEY repository secret."
+          if [ -z "${APP_URL}" ]; then
+            echo "Missing APP_URL repository secret."
+            echo "Set it to your app's base URL, e.g. https://planify.vercel.app"
             exit 1
           fi
 
           curl --fail --silent --show-error \
-            "${SUPABASE_URL}/rest/v1/profiles?select=id&limit=1" \
-            -H "apikey: ${SUPABASE_ANON_KEY}" \
-            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
-            -H "Accept: application/json" \
+            "${APP_URL}/health" \
             --output /dev/null
