@@ -9,23 +9,24 @@ on:
 
 jobs:
   ping:
-    name: Ping /health
+    name: Ping Supabase Auth health
     runs-on: ubuntu-latest
     timeout-minutes: 2
 
     steps:
-      - name: Ping health endpoint
+      - name: Ping /auth/v1/health
         env:
-          APP_URL: ${{ secrets.APP_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           set -euo pipefail
 
-          if [ -z "${APP_URL}" ]; then
-            echo "Missing APP_URL repository secret."
-            echo "Set it to your app's base URL, e.g. https://planify.vercel.app"
+          if [ -z "${SUPABASE_URL}" ] || [ -z "${SUPABASE_ANON_KEY}" ]; then
+            echo "Missing SUPABASE_URL or SUPABASE_ANON_KEY repository secret."
             exit 1
           fi
 
           curl --fail --silent --show-error \
-            "${APP_URL}/health" \
+            "${SUPABASE_URL}/auth/v1/health" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
             --output /dev/null
