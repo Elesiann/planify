@@ -26,3 +26,5 @@ CLAUDE.md
 *.sw?
 .env
 supabase/
+.last-batch.json
+scripts/

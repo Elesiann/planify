@@ -121,3 +121,52 @@ export const useDeleteTransaction = () => {
   })
 }
 
+export type CreateBatchTransactionInput = Omit<
+  TransactionInsert,
+  'household_id' | 'created_by' | 'owner_id'
+>
+
+export const useCreateTransactionsBatch = () => {
+  const queryClient = useQueryClient()
+  const { user } = useAuth()
+  const { activeHouseholdId } = useHousehold()
+
+  return useMutation<Transaction[], Error, CreateBatchTransactionInput[]>({
+    mutationFn: async (items) => {
+      if (!activeHouseholdId) {
+        throw new Error('Nenhum household ativo.')
+      }
+
+      const userId = user?.id
+      if (!userId) {
+        throw new Error('Usuário não autenticado.')
+      }
+
+      const payload: TransactionInsert[] = items.map((item) => ({
+        ...item,
+        total_amount: Math.round(Number(item.total_amount) * 100) / 100,
+        household_id: activeHouseholdId,
+        created_by: userId,
+        paid_by: item.paid_by || userId,
+        owner_id: userId,
+        inserted_at: item.inserted_at || new Date().toISOString(),
+      }))
+
+      const { data, error } = await supabase
+        .from('transactions')
+        .insert(payload)
+        .select('*')
+
+      if (error) {
+        throw new Error(error.message)
+      }
+
+      return data || []
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: transactionsKeys.all })
+    },
+  })
+}
+
+

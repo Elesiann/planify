@@ -27,6 +27,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { TransactionForm } from '@/components/transactions/TransactionForm'
+import { BulkTransactionDialog } from '@/components/transactions/BulkTransactionDialog'
+import { Layers } from 'lucide-react'
 import { useDeleteTransaction } from '@/hooks/useTransactionMutations'
 import { useTransactions } from '@/hooks/useTransactions'
 import type { Transaction } from '@/types/database'
@@ -62,6 +64,7 @@ const LogsPage = () => {
   const [month, setMonth] = useState(() => new Date().getMonth() + 1)
   const [year, setYear] = useState(() => new Date().getFullYear())
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null)
@@ -167,7 +170,17 @@ const LogsPage = () => {
               </Select>
             </div>
           </div>
-          <div className="flex w-full items-end justify-end md:w-auto md:flex-1">
+          <div className="flex w-full flex-col gap-2 sm:flex-row md:w-auto md:flex-1 md:items-end md:justify-end">
+            <Button
+              type="button"
+              size="lg"
+              variant="outline"
+              className="w-full gap-2 px-5 shadow-sm md:w-auto"
+              onClick={() => setIsBulkModalOpen(true)}
+            >
+              <Layers className="h-4 w-4 text-primary" />
+              Lançar em lote
+            </Button>
             <Button type="button" size="lg" className="w-full px-6 md:w-auto" onClick={openCreateModal}>
               Nova transação
             </Button>
@@ -316,6 +329,13 @@ const LogsPage = () => {
           />
         </DialogContent>
       </Dialog>
+      <BulkTransactionDialog
+        key={isBulkModalOpen ? `${month}-${year}` : 'closed'}
+        open={isBulkModalOpen}
+        onOpenChange={setIsBulkModalOpen}
+        defaultMonth={month}
+        defaultYear={year}
+      />
       <Alert
         open={Boolean(transactionToDelete)}
         title="Excluir transação"

@@ -3,6 +3,7 @@ import { useRouter } from '@tanstack/react-router'
 import {
   ArrowRight,
   Home,
+  Layers,
   LayoutDashboard,
   ListChecks,
   Moon,
@@ -86,6 +87,11 @@ export function CommandPalette() {
         <CommandSeparator />
 
         <CommandGroup heading="Ações">
+          <CommandItem onSelect={() => navigate('/logs')}>
+            <Layers className="mr-2 h-4 w-4" />
+            Lançar transações em lote
+            <ArrowRight className="ml-auto h-3 w-3 text-muted-foreground" />
+          </CommandItem>
           <CommandItem onSelect={() => navigate('/logs')}>
             <Plus className="mr-2 h-4 w-4" />
             Nova transação
