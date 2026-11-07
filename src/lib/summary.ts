@@ -1,3 +1,4 @@
+import { parseISO } from 'date-fns'
 import type { TransactionWithOwner } from '@/hooks/useTransactions'
 import type { FixedExpense } from '@/types/database'
 
@@ -134,7 +135,7 @@ export const buildDailySeries = (
 
   transactions.forEach((transaction) => {
     if (!transaction.date) return
-    const day = new Date(transaction.date).getDate()
+    const day = parseISO(transaction.date).getDate()
     if (day >= 1 && day <= daysInMonth) {
       totals[day - 1] += transaction.total_amount
     }

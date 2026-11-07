@@ -3,7 +3,7 @@ import { Controller, useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { CalendarIcon } from 'lucide-react'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -127,7 +127,7 @@ export const TransactionForm = ({
     // Generate default date based on selected month/year or current date
     const getDefaultDate = () => {
       if (initialData?.date) {
-        return new Date(initialData.date)
+        return parseISO(initialData.date)
       }
       if (selectedMonth && selectedYear) {
         const today = new Date()
@@ -150,7 +150,7 @@ export const TransactionForm = ({
       is_installment: initialData?.is_installment ?? false,
       installment_count: initialData?.installment_count ?? null,
       first_installment_date: initialData?.first_installment_date
-        ? new Date(initialData.first_installment_date)
+        ? parseISO(initialData.first_installment_date)
         : undefined,
     }
   }, [initialData, selectedMonth, selectedYear])
