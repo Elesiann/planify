@@ -2,19 +2,18 @@ name: Keep Supabase Awake
 
 on:
   schedule:
-    # Supabase free projects pause after 7 days of inactivity.
-    # Run every 5 days to leave room for delayed or skipped scheduled jobs.
-    - cron: '0 0 */5 * *'
+    # Free projects pause after 7 days without database activity.
+    - cron: '0 12 */2 * *'
   workflow_dispatch:
 
 jobs:
   ping:
-    name: Ping Supabase Auth health
+    name: Query Postgres through PostgREST
     runs-on: ubuntu-latest
     timeout-minutes: 2
 
     steps:
-      - name: Ping /auth/v1/health
+      - name: Select one household row
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -26,7 +25,8 @@ jobs:
             exit 1
           fi
 
-          curl --fail --silent --show-error \
-            "${SUPABASE_URL}/auth/v1/health" \
+          # /auth/v1/health never reaches Postgres, so it does not count as activity.
+          curl --fail --silent --show-error --retry 3 --retry-delay 10 \
+            "${SUPABASE_URL}/rest/v1/households?select=id&limit=1" \
             -H "apikey: ${SUPABASE_ANON_KEY}" \
-            --output /dev/null
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}"
